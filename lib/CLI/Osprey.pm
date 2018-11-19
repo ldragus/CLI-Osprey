@@ -49,7 +49,7 @@ sub import {
         && $attributes{is} ne 'lazy' )
     {
       $attributes{default} = sub {
-          my $parent = $_[0]->{parent_command};
+          my $parent = $_[0]->_meta->parent;
           return unless defined $parent;
 
           my $mth = $parent->can( $name );
@@ -63,10 +63,10 @@ sub import {
                 unshift @path,
                   { reverse $parent->_osprey_subcommands }->{$target};
                 $target = blessed $parent;
-                last if !defined $parent->{parent_command};
-                $parent = $parent->{parent_command};
+                last if !defined $parent->_meta->parent;
+                $parent = $parent->_meta->parent;
             }
-            unshift @path, $parent->invoked_as;
+            unshift @path, $parent->_meta->invoked_as;
 
             my $subcommand = pop @path;
             my $command    = join( ' / ', @path );
@@ -555,7 +555,7 @@ A subcommand can be another class, which also uses C<CLI::Osprey>. For example:
 
     sub run {
         my ($self) = @_;
-        if ($self->parent_command->verbose) {
+        if ($self->_meta->parent->verbose) {
             say "Be dangerous, and unpredictable... and make a lot of noise.";
         }
         $self->do_something_with($self->target);
