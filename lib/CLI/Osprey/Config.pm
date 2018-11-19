@@ -53,8 +53,8 @@ around BUILDARGS => sub {
     my $meta = $params->{_meta};
 
     %_config
-      = ( %{ $params->{parent_command}->_config->{ $params->{subcommand} } // {} }, %_config )
-      if defined $params->{parent_command} && $params->{parent_command}->can( '_config' );
+      = ( %{ $meta->parent->_config->{ $meta->command } // {} }, %_config )
+      if defined $meta->parent && $meta->parent->can( '_config' );
 
     $params->{_config} = \%_config;
 
