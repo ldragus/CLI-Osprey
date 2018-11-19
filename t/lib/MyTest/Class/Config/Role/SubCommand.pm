@@ -7,9 +7,11 @@ with 'CLI::Osprey::Config';
 
 # this percolates up to the top level to retrieve the global message
 # option
-has '+parent_command' => (
-    is      => 'ro',
-    handles => ['message'],
+has 'parent' => (
+    is       => 'ro',
+    init_arg => undef,
+    default  => sub { $_[0]->_meta->parent },
+    handles  => ['message'],
 );
 
 option 'config' => (
