@@ -127,6 +127,21 @@ has '_meta' => (
 		is => 'ro',
 	       );
 
+sub _osprey_options {
+  my $class = shift;
+  return $class->maybe::next::method(@_);
+}
+
+sub _osprey_config {
+  my $class = shift;
+  return $class->maybe::next::method(@_);
+}
+
+sub _osprey_subcommands {
+  my $class = shift;
+  return $class->maybe::next::method(@_);
+}
+
 sub new_with_options {
   my ($class, %params) = @_;
   my %config = $class->_osprey_config;
