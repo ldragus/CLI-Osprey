@@ -121,8 +121,6 @@ sub _osprey_fix_argv {
 use Moo::Role;
 use CLI::Osprey::Meta;
 
-requires qw(_osprey_config _osprey_options _osprey_subcommands);
-
 has '_meta' => (
 		is => 'ro',
 	       );
