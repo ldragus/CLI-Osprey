@@ -1,6 +1,7 @@
 package MyCmd::Role::SubCommand;
 
 use Moo::Role;
+use CLI::Osprey;
 
 with 'MyCmd::Role::Config';
 
@@ -13,16 +14,12 @@ has 'parent' => (
     handles  => ['message'],
 );
 
-around new_with_options => sub {
-    my ( $orig, $class, %params ) = @_;
-
-    my $meta = $params{_meta};
-
-    my $_config = $params{_config} = $meta->parent->_config->{ $meta->command }
-      // {};
-    $class->_extract_config_params( $_config, \%params );
-    return $class->$orig( %params );
-};
+option 'config' => (
+    is     => 'ro',
+    format => 's',
+    short  => 'f',
+    doc    => 'config file',
+);
 
 1;
 
