@@ -2,6 +2,8 @@ package CLI::Osprey;
 use strict;
 use warnings;
 
+use constant ALT => 'CXC';
+
 # ABSTRACT: MooX::Options + MooX::Cmd + Sanity
 # VERSION
 # AUTHORITY
