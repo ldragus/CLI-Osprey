@@ -48,36 +48,7 @@ sub import {
         && !defined $attributes{builder}
         && $attributes{is} ne 'lazy' )
     {
-      $attributes{default} = sub {
-          my $parent = $_[0]->_meta->parent;
-          return unless defined $parent;
-
-          my $mth = $parent->can( $name );
-          if ( !defined $mth ) {
-            my @path;
-
-            # we can get the class of the parent (sub)command,
-            # but we want the actual command name.  For that
-            # we need $parent->parent->_osprey_subcommands.
-            while ( defined $parent ) {
-                unshift @path,
-                  { reverse $parent->_osprey_subcommands }->{$target};
-                $target = blessed $parent;
-                last if !defined $parent->_meta->parent;
-                $parent = $parent->_meta->parent;
-            }
-            unshift @path, $parent->_meta->invoked_as;
-
-            my $subcommand = pop @path;
-            my $command    = join( ' / ', @path );
-
-            require Carp;
-            Carp::croak(
-                qq[parent '$command' of '$subcommand' does not have a '--$name' option\n],
-            );
-          }
-          $mth->( $parent );
-      };
+      $attributes{builder} = _inherited_option_builder( $target, $name );
       $attributes{lazy} = 1;
     }
 
@@ -159,6 +130,40 @@ sub _option_attributes {
     $ret->{$_} = $attributes{$_} if exists $attributes{$_};
   }
   return $ret;
+}
+
+sub _inherited_option_builder {
+  my ($target, $name) = @_;
+
+  sub {
+    my $parent = $_[0]->_meta->parent;
+    return unless defined $parent;
+
+    my $mth = $parent->can($name);
+    if (!defined $mth) {
+      my @path;
+
+      # we can get the class of the parent (sub)command,
+      # but we want the actual command name.  For that
+      # we need $parent->parent->_osprey_subcommands.
+      while (defined $parent) {
+        unshift @path, { reverse $parent->_osprey_subcommands }->{$target};
+        $target = blessed $parent;
+        last if !defined $parent->_meta->parent;
+        $parent = $parent->_meta->parent;
+      }
+      unshift @path, $parent->_meta->invoked_as;
+
+      my $subcommand = pop @path;
+      my $command    = join(' / ', @path);
+
+      require Carp;
+      Carp::croak(
+          qq[parent '$command' of '$subcommand' does not have a '--$name' option\n],
+      );
+    }
+    $mth->($parent);
+  }
 }
 
 1;
