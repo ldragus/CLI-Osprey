@@ -466,6 +466,17 @@ If both L</keyvalue> and L</repeatable> are true, the option's values
 are stored in a hash rather than an array. The value specified for the
 option should be of the form I<key>C<=>I<value>.
 
+=head2 inherit
+
+Default: B<false>.
+
+An inherited option's default value is the value of the parent
+command's or sub-command's option of the same name.  This attribute is
+ignored if the C<default> or C<builder> attributes are set (either
+explicitly or implicitly).  If the option has not been set and the
+parent command or sub-command does not have a similarly named option,
+an exception will be thrown when the option's value is first accessed.
+
 =head2 negatable
 
 Default: B<false>.
