@@ -84,6 +84,9 @@ sub import {
     }
 
     $has->($name => _non_option_attributes(%attributes));
+    # keep '^+' for $has->(), to permit overwrite, but remove it before passing the name to GetOptions
+    $name =~ s/^\+//;
+
     $options_data->{$name} = _option_attributes($name, %attributes);
     $options_data->{$name}{added_order} = ++$added_order;
   };
